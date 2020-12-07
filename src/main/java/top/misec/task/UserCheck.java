@@ -1,18 +1,19 @@
 package top.misec.task;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
-import top.misec.apiquery.ApiList;
-import top.misec.config.Config;
-import top.misec.pojo.userinfobean.Data;
-import top.misec.utils.HttpUtil;
+import static top.misec.task.TaskInfoHolder.statusCodeStr;
+import static top.misec.task.TaskInfoHolder.userInfo;
 
 import java.util.Collections;
 
-import static top.misec.task.TaskInfoHolder.statusCodeStr;
-import static top.misec.task.TaskInfoHolder.userInfo;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+
+import top.misec.apiquery.ApiList;
+import top.misec.pojo.userinfobean.Data;
+import top.misec.utils.HttpUtil;
 
 /**
  * 登录检查
