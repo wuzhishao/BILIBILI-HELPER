@@ -1,19 +1,17 @@
 package top.misec.task;
 
-import static top.misec.task.TaskInfoHolder.statusCodeStr;
-import static top.misec.task.TaskInfoHolder.userInfo;
-
-import java.util.Collections;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-
 import top.misec.apiquery.ApiList;
 import top.misec.pojo.userinfobean.Data;
 import top.misec.utils.HttpUtil;
+
+import java.util.Collections;
+
+import static top.misec.task.TaskInfoHolder.STATUS_CODE_STR;
+import static top.misec.task.TaskInfoHolder.userInfo;
 
 /**
  * 登录检查
@@ -37,7 +35,7 @@ public class UserCheck implements Task {
         } else {
             userJson = HttpUtil.doGet(ApiList.LOGIN);
             //判断Cookies是否有效
-            if (userJson.get(statusCodeStr).getAsInt() == 0
+            if (userJson.get(STATUS_CODE_STR).getAsInt() == 0
                     && userJson.get("data").getAsJsonObject().get("isLogin").getAsBoolean()) {
                 userInfo = new Gson().fromJson(userJson
                         .getAsJsonObject("data"), Data.class);

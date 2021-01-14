@@ -23,16 +23,12 @@ BILIBILI-HELPER
 
 **仓库地址：[JunzhouLiu/BILIBILI-HELPER](https://github.com/JunzhouLiu/BILIBILI-HELPER)**
 
-**本项目不会增加类似于自动转发抽奖，秒杀，下载版权受限视频等侵犯UP主/B站权益的功能，开发这个应用的目的是单纯的技术分享。下游分支开发者/使用者也请不要滥用相关功能。**
-
-**本项目欢迎其他开发者参与贡献，基于本工具的二次开发，使用其他语言重写都没有什么问题，能在技术上给你带来帮助和收获就很好**
-
 **请不要滥用相关API，让我们一起爱护B站 ❤**
 
 ## 功能列表
 
 * [x] 每天上午 9 点 10 分自动开始任务。*【运行时间可自定义】*
-* [x] 哔哩哔哩漫画每日自动签到 。
+* [x] 哔哩哔哩漫画每日自动签到，自动阅读1章节 。
 * [x] 每日自动从热门视频中随机观看 1 个视频，分享一个视频。
 * [x] 每日从热门视频中选取 5 个进行智能投币 *【如果投币不能获得经验了，则不会投币】*
 * [x] 投币支持下次一定啦，可自定义每日投币数量。*【如果检测到你已经投过币了，则不会投币】*
@@ -83,17 +79,19 @@ BILIBILI-HELPER
 
 ![图示](docs/IMG/20201012001307.png)
 
-3. **点击项目 Settings -> Secrets -> New Secrets 添加以下 3 个 Secrets。**
+3. **点击项目 Settings -> Secrets -> New Secrets 添加以下 3 个 Secrets，其中server酱微信推送的sckey可参阅[微信订阅通知](#微信订阅通知)**
 
-| Name       | Value            |
-| ---------- | ---------------- |
-| DEDEUSERID | 从 Cookie 中获取 |
-| SESSDATA   | 从 Cookie 中获取 |
-| BILI_JCT   | 从 Cookie 中获取 |
+| Name          | Value               |
+| ------------- | ------------------- |
+| DEDEUSERID    | 从 Cookie 中获取    |
+| SESSDATA      | 从 Cookie 中获取    |
+| BILI_JCT      | 从 Cookie 中获取    |
+| SERVERPUSHKEY | server酱推送的sckey |
+
 
 ![图示](docs/IMG/20201013210000.png)
 
-4. **开启 Actions 并触发每日自动执行**
+1. **开启 Actions 并触发每日自动执行**
 
 **Github Actions 默认处于关闭状态，还大家请手动开启 Actions ，执行一次工作流，验证是否可以正常工作。**
 
@@ -146,20 +144,27 @@ wget https://raw.githubusercontent.com/JunzhouLiu/BILIBILI-HELPER/main/setup.sh 
 
 **ps：注意，如果使用自定义配置，请将`config.json`和jar包放置在同一目录(使用setup.sh安装则需要将`config.json`放置到`{HOME}/BILIBILI-HELPER`)，`v1.2.2`之后的版本`release`中都会携带一份`config.json`。**
 
-2. 除此之外，也可以通过点击 [BILIBILI-HELPER/release](https://github.com/JunzhouLiu/BILIBILI-HELPER/releases/latest)，下载已发布的版本，解压后将jar包手动上传到Linux服务器，使用crontab完成定时执行。
+2. 除此之外，也可以通过点击 [BILIBILI-HELPER/release](https://github.com/JunzhouLiu/BILIBILI-HELPER/releases/latest)，下载已发布的版本，解压后将jar包手动上传到Linux服务器，使用crontab完成定时执行，如果使用`crontab`请记得`source /etc/profile`和`source ~/.bashrc`,建议直接使用仓库提供的[`start.sh`](https://github.com/JunzhouLiu/BILIBILI-HELPER/blob/main/start.sh)脚本,注意修改脚本的jar包路径和cookies参数。
 
 
-**命令格式解释：**
+**crontab命令示例**
 
-`30 10 * * * java -jar /home/BILIBILI-HELP.jar DEDEUSERID SESSDATA BILI_JCT SCKEY>/var/log/cron.log &`
+`30 10 * * * sh /home/start.sh` 
 
-| args                               | 说明                                                                                                       |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| 30 10 * * *                        | cron 定时时间                                                                                              |
-| java -jar                          | 执行jar包                                                                                                  |
-| /home/BILIBILI-HELP.jar            | jar包路径                                                                                                  |
-| DEDEUSERID SESSDATA BILI_JCT SCKEY | 传入参数的顺序，参数含义请见上文,SCKEY可为空（用于server酱推送日志，等同actions任务配置中的SERVERPUSHKEY） |
-| >/var/log/cron.log &               | 日志写入的路径                                                                                             |
+| args              | 说明               |
+| ----------------- | ------------------ |
+| 30 10 * * *       | `crontab` 定时时间 |
+| sh /home/start.sh | `start.sh`的路径   |
+
+```shell
+#!/bin/bash
+source /etc/profile 
+source ~/.bashrc 
+source ~/.zshrc #其他终端请自行引入环境变量
+echo $PATH
+java -jar /home/BILIBILI-HELPER.jar DEDEUSERID SESSDATA BILI_JCT SCKEY >> /var/log/bilibili-help.log
+# 注意将jar包路径替换为实际路径。将参数修改该你自己的参数，cookies中含有等特殊字符需要转义。
+```
 
 
 **命令示例：**
@@ -188,7 +193,7 @@ wget https://raw.githubusercontent.com/JunzhouLiu/BILIBILI-HELPER/main/setup.sh 
 | devicePlatform     | [ios,android]     | 手机端漫画签到时的平台，建议选择你设备的平台 ，默认 `ios`                                                                                                                                                                                          |
 | coinAddPriority    | [0,1]             | 0：优先给热榜视频投币，1：优先给关注的up投币                                                                                                                                                                                                       |
 | userAgent          | 浏览器UA          | 用户可根据部署平台配置，可根据userAgent参数列表自由选取，如果触发了HTTP/1.1 412 Precondition Failed也请修改UA                                                                                                                                      |
-| skipDailyTask      | [0,1]             | 是否跳过每日任务，如果需要临时关闭每日任务，此项改为1即可，开启则改为0即可                                                                                                                                                                         |
+| skipDailyTask      | [false,true]      | 是否跳过每日任务，默认`false`,如果需要跳过每日任务，请改为true                                                                                                                                                                                     |
 
 配置文件示例：
 ```json
@@ -259,7 +264,9 @@ userAgent可选参数列表
 5. 如果你使用了第三方修改的，打包的本工具代码，那你可得注意了，指不定人就把你的数据上传到他自己的服务器了，这可和我没关系。（**网络安全教育普及任重而道远**）
 6. 本工具源码仅在[JunzhouLiu/BILIBILI-HELPER](https://github.com/JunzhouLiu/BILIBILI-HELPER)开源，其余的地方的代码均不是我提交的，可能是抄我的，借鉴我的，但绝对不是我发布的，出问题和我也没关系。 
 7. 我开源本工具的代码仅仅是技术分享，没有任何丝毫的盈利赚钱目的，如果你非要给我打赏/充电，那我就是网络乞丐，咱们不构成任何雇佣，购买关系的交易。
-8. 本项目遵守[MIT License](https://github.com/JunzhouLiu/BILIBILI-HELPER/blob/main/LICENSE) ，请各位知悉。
+8. 本项目不会增加类似于自动转发抽奖，秒杀，下载版权受限视频等侵犯UP主/B站权益的功能，开发这个应用的目的是单纯的技术分享。下游分支开发者/使用者也请不要滥用相关功能。
+9. 本项目欢迎其他开发者参与贡献，基于本工具的二次开发，使用其他语言重写都没有什么问题，能在技术上给你带来帮助和收获就很好.
+10. 本项目遵守[MIT License](https://github.com/JunzhouLiu/BILIBILI-HELPER/blob/main/LICENSE) ，请各位知悉。
 
 
 ## API 参考列表
