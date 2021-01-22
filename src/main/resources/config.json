@@ -2,6 +2,8 @@
   "numberOfCoins": 1,
   "selectLike": 1,
   "monthEndAutoCharge": true,
+  "giveGift": true,
+  "upLive": "0",
   "chargeForLove": "0",
   "devicePlatform": "ios",
   "coinAddPriority": 1,
