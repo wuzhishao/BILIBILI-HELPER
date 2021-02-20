@@ -55,6 +55,10 @@ public class HttpUtil {
     }
 
     public static JsonObject doPost(String url, String requestBody) {
+        return doPost(url, requestBody, null);
+    }
+
+    public static JsonObject doPost(String url, String requestBody, Map<String, String> headers) {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse httpPostResponse = null;
 
@@ -78,11 +82,18 @@ public class HttpUtil {
             httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
         }
         httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        httpPost.setHeader("Referer", "https://www.bilibili.com/");
+        //httpPost.setHeader("Referer", "https://www.bilibili.com/");
         httpPost.setHeader("Connection", "keep-alive");
         httpPost.setHeader("User-Agent", userAgent);
         httpPost.setHeader("Cookie", verify.getVerify());
 
+        if (null != headers && !headers.isEmpty()) {
+            for (String key : headers.keySet()) {
+                httpPost.setHeader(key, headers.get(key));
+            }
+        }else{
+            httpPost.setHeader("Referer", "https://www.bilibili.com/");   
+        }
         // 封装post请求参数
 
         StringEntity stringEntity = new StringEntity(requestBody, "utf-8");
@@ -135,7 +146,7 @@ public class HttpUtil {
             // 创建httpGet远程连接实例
             HttpGet httpGet = new HttpGet(url);
             // 设置请求头信息，鉴权
-            httpGet.setHeader("Referer", "https://www.bilibili.com/");
+            //httpGet.setHeader("Referer", "https://www.bilibili.com/");
             httpGet.setHeader("Connection", "keep-alive");
             httpGet.setHeader("User-Agent", userAgent);
             httpGet.setHeader("Cookie", verify.getVerify());
@@ -157,7 +168,7 @@ public class HttpUtil {
                 String result = EntityUtils.toString(entity);
                 resultJson = new JsonParser().parse(result).getAsJsonObject();
             } else if (responseStatusCode == 412) {
-                log.info("出了一些问题，请在自定义配置中更换UA");
+                log.info("出了一些问题，可能是账号状态异常，如果是账号状态异常，建议先停止使用本工具");
             } else {
                 log.debug(httpGetResponse.getStatusLine().toString());
             }
